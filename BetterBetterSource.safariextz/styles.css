@@ -1,0 +1,85 @@
+@font-face {
+	font-family: "UbuntuMono";
+	font-style: normal;
+	font-weight: normal;
+	src: url(fonts/DejaVuSansMono.ttf);
+}
+
+@font-face {
+	font-family: "UbuntuMono";
+	font-style: normal;
+	font-weight: bold;
+	src: url(fonts/DejaVuSansMono-Bold.ttf);
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: white;
+	font: 14px "UbuntuMono";
+}
+
+pre {
+	margin: 0;
+	padding: 0;
+	white-space: pre-wrap;
+	font: 1em "UbuntuMono";
+}
+
+#source-foreground {
+	position: absolute;
+	top: 0;
+	z-index: 300;
+	padding-left: 10ex;
+	padding-top: 10px;
+	padding-bottom: 20px;
+}
+
+#source-background {
+	position: absolute;
+	top: 0;
+	z-index: 200;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 10ex;
+	visibility: hidden;
+	padding-top: 10px;
+	padding-bottom: 20px;
+}
+
+#source-background > .number {
+	color: #9a9a9a;
+	visibility: visible;
+	width: 8ex;
+	display: inline-block;
+	text-align: right;
+	padding-right: 2ex;
+	margin-left: -10ex;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+#background {
+	background-color: white;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	z-index: 100;
+	font-size: 1em;
+}
+
+#background > #gutter {
+	background-color: #e7e7e7;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	border-right: 1px solid #bbb;
+	z-index: 120;
+	width: 9ex;
+}

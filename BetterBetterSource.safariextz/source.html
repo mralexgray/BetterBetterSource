@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>BetterSource</title>
+	<link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="prettify/prettify.css" />
+</head>
+<body onload="init()">
+
+	<div id="background"><div id="gutter">&nbsp;</div></div>
+	<pre id="source-background"></pre>
+	<pre id="source-foreground" class="prettyprint"></pre>
+
+	<script src="prettify/prettify.js"></script>
+	<script>
+
+	function escapeHtml(str) {
+		var div = document.createElement('div');
+		div.appendChild(document.createTextNode(str));
+		return div.innerHTML;
+	};
+
+	function markNumbers(source) {
+		var lines = source.split(/\r\n|\n\r|\n|\r/igm);
+		for (var i in lines) {
+			lines[i] = lines[i].replace(/^(......)/, '<span class="number">$1</span>');
+		}
+		console.log(lines.join('\n'));
+		return lines.join('\n');
+	}
+
+	function init() {
+		safari.self.addEventListener("message", function(event){
+			
+			if (event.name == "SourceTabContentReady") {
+				if (event.message.type == "GENERATED") {
+					document.title = "BetterSource (generated)";
+				}
+				document.getElementById('source-foreground').innerHTML = escapeHtml(event.message.content);
+				document.getElementById('source-background').innerHTML = markNumbers(escapeHtml(event.message.numbers));
+				prettyPrint();
+			}
+
+		}, false);
+
+		safari.self.tab.dispatchMessage("SourceTabReady", null);
+	}
+	</script>
+</body>
+</html>
+

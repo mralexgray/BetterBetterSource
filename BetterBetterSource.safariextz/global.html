@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script>
+	// Bettersource
+	window.bettersource = {};
+	bettersource.conf = {
+		GUTTER: 6 //chars wide
+	};
+	bettersource.source = {
+		type: null,
+		content: null,
+		numbers: null
+	};
+
+	bettersource.openTab = function(browserWindow) {
+		var tab = browserWindow.openTab();
+		tab.url = safari.extension.baseURI + "source.html";
+	};
+
+	bettersource.processSource = function(source, browserWindow) {
+		var gutter = Array(bettersource.conf.GUTTER + 1).join(' ');
+		var lines = source.split(/\r\n|\n\r|\n|\r/igm);
+		var sourceNumbered = '';
+
+		for (var i in lines) {
+			var number = parseInt(i) + 1;
+			var padded = (gutter + number).slice(-bettersource.conf.GUTTER);
+			sourceNumbered += padded + lines[i] + '\n';
+		}
+
+		bettersource.source.content = source;
+		bettersource.source.numbers = sourceNumbered;
+		bettersource.openTab(browserWindow);
+	};
+
+	bettersource.init = function() {
+
+		// Event listeners
+		// Commands
+		safari.application.addEventListener("command", function(event) {
+
+			if (event.command == "GeneratedSourceCommand") {
+				bettersource.source.type = "GENERATED";
+				bettersource.source.content = null;
+				safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("userRequestedGeneratedSource", null);
+			}
+			if (event.command == "OriginalSourceCommand"){
+				bettersource.source.type = "ORIGINAL";
+				bettersource.source.content = null;
+				safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("userRequestedOriginalSource", null);
+			}
+		}, false);
+		
+		// Validations
+		safari.application.addEventListener("validate", function(event) {
+
+			if ((event.command == "GeneratedSourceCommand") || (event.command == "OriginalSourceCommand")) {
+				event.target.disabled = event.target.disabled = !event.target.browserWindow.activeTab.url;
+			}
+		}, false);
+
+		// Messages
+		// Open the new tab only after a successful source fetch
+		safari.application.addEventListener("message", function(event){
+			
+			if (event.name == "GeneratedSourceReady") {
+				bettersource.processSource(event.message[0], event.target.browserWindow);
+			}
+			
+			if (event.name == "OriginalSourceReady") {
+				bettersource.processSource(event.message, event.target.browserWindow);
+			}
+
+			if (event.name == "SourceTabReady") {
+				safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("SourceTabContentReady", bettersource.source);
+			}
+
+		}, false);
+	};
+
+	bettersource.init();
+
+	</script>
+</head>
+<body></body>
+</html>
+
+
+
+
+
